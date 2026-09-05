@@ -259,156 +259,6 @@ class AidrivenRetrosyntheticAnalysisWithReactionPredictionEngine:
         return res
 
 # =============================================================================
-# 6. IMPLEMENTATION
-# =============================================================================
-@dataclass
-class ImplementationEngineResult:
-    feature_name: str = "Implementation"
-    status: str = "OPTIMAL"
-    score: float = 0.0
-    metrics: Dict[str, Any] = field(default_factory=dict)
-    alerts: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
-    timestamp: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-
-class ImplementationEngine:
-    """
-    Implementation: - Create `src/retrosynthesis/template_recommender.py`:
-    """
-    def __init__(self, threshold: float = 1.0, config: Optional[Dict[str, Any]] = None):
-        self.threshold = threshold
-        self.config = config or {}
-        self.history: List[ImplementationEngineResult] = []
-
-    def evaluate(self, primary_value: float, secondary_value: float = 0.0, **kwargs) -> ImplementationEngineResult:
-        alerts = []
-        recs = []
-        status = "OPTIMAL"
-        score = round(float(primary_value), 3)
-
-        if primary_value > self.threshold * 2:
-            status = "CRITICAL_ALERT"
-            alerts.append(f"Implementation: Primary value {primary_value:.2f} breached critical threshold ({self.threshold * 2:.2f})")
-            recs.append("Initiate immediate protocol review and escalate to attending lead.")
-        elif primary_value > self.threshold:
-            status = "WARNING"
-            alerts.append(f"Implementation: Value {primary_value:.2f} exceeds baseline threshold ({self.threshold:.2f})")
-            recs.append("Increase monitoring frequency and perform secondary verification.")
-        else:
-            recs.append("Parameters nominal under standard operating bounds.")
-
-        res = ImplementationEngineResult(
-            feature_name="Implementation",
-            status=status,
-            score=score,
-            metrics={"primary": primary_value, "secondary": secondary_value, **kwargs},
-            alerts=alerts,
-            recommendations=recs
-        )
-        self.history.append(res)
-        return res
-
-# =============================================================================
-# 7. DEPENDENCIES
-# =============================================================================
-@dataclass
-class DependenciesEngineResult:
-    feature_name: str = "Dependencies"
-    status: str = "OPTIMAL"
-    score: float = 0.0
-    metrics: Dict[str, Any] = field(default_factory=dict)
-    alerts: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
-    timestamp: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-
-class DependenciesEngine:
-    """
-    Dependencies: ```
-    """
-    def __init__(self, threshold: float = 1.0, config: Optional[Dict[str, Any]] = None):
-        self.threshold = threshold
-        self.config = config or {}
-        self.history: List[DependenciesEngineResult] = []
-
-    def evaluate(self, primary_value: float, secondary_value: float = 0.0, **kwargs) -> DependenciesEngineResult:
-        alerts = []
-        recs = []
-        status = "OPTIMAL"
-        score = round(float(primary_value), 3)
-
-        if primary_value > self.threshold * 2:
-            status = "CRITICAL_ALERT"
-            alerts.append(f"Dependencies: Primary value {primary_value:.2f} breached critical threshold ({self.threshold * 2:.2f})")
-            recs.append("Initiate immediate protocol review and escalate to attending lead.")
-        elif primary_value > self.threshold:
-            status = "WARNING"
-            alerts.append(f"Dependencies: Value {primary_value:.2f} exceeds baseline threshold ({self.threshold:.2f})")
-            recs.append("Increase monitoring frequency and perform secondary verification.")
-        else:
-            recs.append("Parameters nominal under standard operating bounds.")
-
-        res = DependenciesEngineResult(
-            feature_name="Dependencies",
-            status=status,
-            score=score,
-            metrics={"primary": primary_value, "secondary": secondary_value, **kwargs},
-            alerts=alerts,
-            recommendations=recs
-        )
-        self.history.append(res)
-        return res
-
-# =============================================================================
-# 8. TESTING
-# =============================================================================
-@dataclass
-class TestingEngineResult:
-    feature_name: str = "Testing"
-    status: str = "OPTIMAL"
-    score: float = 0.0
-    metrics: Dict[str, Any] = field(default_factory=dict)
-    alerts: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
-    timestamp: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
-
-class TestingEngine:
-    """
-    Testing: - Validate retrosynthesis against published MMP-based optimization campaigns
-    """
-    def __init__(self, threshold: float = 1.0, config: Optional[Dict[str, Any]] = None):
-        self.threshold = threshold
-        self.config = config or {}
-        self.history: List[TestingEngineResult] = []
-
-    def evaluate(self, primary_value: float, secondary_value: float = 0.0, **kwargs) -> TestingEngineResult:
-        alerts = []
-        recs = []
-        status = "OPTIMAL"
-        score = round(float(primary_value), 3)
-
-        if primary_value > self.threshold * 2:
-            status = "CRITICAL_ALERT"
-            alerts.append(f"Testing: Primary value {primary_value:.2f} breached critical threshold ({self.threshold * 2:.2f})")
-            recs.append("Initiate immediate protocol review and escalate to attending lead.")
-        elif primary_value > self.threshold:
-            status = "WARNING"
-            alerts.append(f"Testing: Value {primary_value:.2f} exceeds baseline threshold ({self.threshold:.2f})")
-            recs.append("Increase monitoring frequency and perform secondary verification.")
-        else:
-            recs.append("Parameters nominal under standard operating bounds.")
-
-        res = TestingEngineResult(
-            feature_name="Testing",
-            status=status,
-            score=score,
-            metrics={"primary": primary_value, "secondary": secondary_value, **kwargs},
-            alerts=alerts,
-            recommendations=recs
-        )
-        self.history.append(res)
-        return res
-
-# =============================================================================
 # COMPOSITE ENRICHMENT SUITE
 # =============================================================================
 class LeadoptimizationmmpagentEnrichmentSuite:
@@ -419,20 +269,20 @@ class LeadoptimizationmmpagentEnrichmentSuite:
         self.dependenciesengine = DependenciesEngine()
         self.testingengine = TestingEngine()
         self.aidrivenretrosynthet = AidrivenRetrosyntheticAnalysisWithReactionPredictionEngine()
-        self.implementationengine = ImplementationEngine()
-        self.dependenciesengine = DependenciesEngine()
-        self.testingengine = TestingEngine()
 
     def execute_all(self, primary_val: float = 1.5, secondary_val: float = 0.5) -> Dict[str, Any]:
+        if not isinstance(primary_val, (int, float)) or not isinstance(secondary_val, (int, float)):
+            raise TypeError("primary_val and secondary_val must be numeric values")
+        if math.isnan(primary_val) or math.isnan(secondary_val):
+            raise ValueError("primary_val and secondary_val must not be NaN")
+        if math.isinf(primary_val) or math.isinf(secondary_val):
+            raise ValueError("primary_val and secondary_val must be finite")
         results = {}
         results["QsarModelTrainingPipelineEngine"] = self.qsarmodeltrainingpip.evaluate(primary_val, secondary_val)
         results["ImplementationEngine"] = self.implementationengine.evaluate(primary_val, secondary_val)
         results["DependenciesEngine"] = self.dependenciesengine.evaluate(primary_val, secondary_val)
         results["TestingEngine"] = self.testingengine.evaluate(primary_val, secondary_val)
         results["AidrivenRetrosyntheticAnalysisWithReactionPredictionEngine"] = self.aidrivenretrosynthet.evaluate(primary_val, secondary_val)
-        results["ImplementationEngine"] = self.implementationengine.evaluate(primary_val, secondary_val)
-        results["DependenciesEngine"] = self.dependenciesengine.evaluate(primary_val, secondary_val)
-        results["TestingEngine"] = self.testingengine.evaluate(primary_val, secondary_val)
         return results
 
 # Global instance

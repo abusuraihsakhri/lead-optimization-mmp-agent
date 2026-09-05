@@ -75,18 +75,45 @@ python cli.py --task-id <value> --target <value> --primary <value> --secondary <
 
 ---
 
+## 🔧 Installation
+
+```bash
+pip install -e .
+# Or install dependencies directly:
+pip install fastapi uvicorn pydantic pytest
+```
+
+### Environment Variables
+
+| Variable | Required | Description |
+|:---------|:---------|:------------|
+| `AUDIT_SECRET_KEY` | Yes | HMAC-SHA256 key for the audit trail (min 16 chars). Generate with: `python -c "import secrets; print(secrets.token_hex(32))"` |
+| `MODEL_PROVIDER` | No | LLM provider: `mock` (default), `ollama`, `claude`, `openai` |
+
+---
+
 ## 🧪 Testing & Verification
 
 Run the automated test suite:
 
 ```bash
+set AUDIT_SECRET_KEY=test-key-for-ci-2026
 pytest -v
 ```
 
 Execute high-throughput batch simulation benchmarks:
 
 ```bash
-python simulator.py --tasks 1000 --concurrency 8
+python simulator.py 1000
+```
+
+Run the interactive CLI:
+
+```bash
+python cli.py audit --task-id T001 --primary 28.5 --secondary 14.2 --critical --status DISCORDANT
+python cli.py chat "What is the system status?"
+python cli.py batch -i sample.csv -o results.csv
+python cli.py verify-audit
 ```
 
 ---
@@ -95,5 +122,11 @@ python simulator.py --tasks 1000 --concurrency 8
 
 ```bash
 docker build -t lead-optimization-mmp-agent .
-docker run -p 8000:8000 lead-optimization-mmp-agent
+docker run -e AUDIT_SECRET_KEY=your-secure-key-here -p 8000:8000 lead-optimization-mmp-agent
+```
+
+Or with Docker Compose:
+
+```bash
+docker-compose up --build
 ```
