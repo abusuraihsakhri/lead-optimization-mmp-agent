@@ -1,27 +1,42 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "lead-optimization-mmp-engine"
-version = "2.0.0"
-description = "MMP-Optimizer: Matched Molecular Pair (MMP) Lead Optimization Engine"
+version = "2.0.1"
+description = "Generic audit workflow and measured paired-potency comparison"
 readme = "README.md"
-authors = [{ name = "Dr. Abu Suraih Sakhri", email = "abusuraih@example.com" }]
+authors = [{ name = "Dr. Abu Suraih Sakhri" }]
 license = { text = "MIT" }
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Topic :: Security/Cryptography",
-    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Chemistry",
 ]
-requires-python = ">=3.9"
-dependencies = []
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.110,<1",
+    "uvicorn>=0.27,<1",
+    "pydantic>=2,<3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "httpx>=0.27,<1"]
 
 [project.scripts]
 lead-optimization-mmp-engine = "mmp_optimizer.cli:main"
+lead-optimization-mmp-agent = "cli:main"
+mmp-pair-compare = "mmp_optimizer.pair_cli:main"
+
+[tool.setuptools]
+py-modules = ["cli", "enrichment", "simulator", "mmp_optimizer_app"]
+
+[tool.setuptools.packages.find]
+include = ["agents*", "mmp_optimizer*"]
+namespaces = false
 
 [project.urls]
-Homepage = "https://github.com/abusuraihsakhri/lead-optimization-mmp-engine"
-Repository = "https://github.com/abusuraihsakhri/lead-optimization-mmp-engine.git"
+Homepage = "https://github.com/abusuraihsakhri/lead-optimization-mmp-agent"
+Repository = "https://github.com/abusuraihsakhri/lead-optimization-mmp-agent.git"
