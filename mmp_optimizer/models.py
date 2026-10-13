@@ -1,12 +1,9 @@
-"""
-Data Models & Telemetry Definitions for MMP-Optimizer: Matched Molecular Pair (MMP) Lead Optimization Agent.
-Domain: Computational Chemistry & AI Drug Discovery
-Standard: Matched Molecular Pair Analysis (MMPA)
-"""
+"""Payload and alert models for the legacy generic threshold evaluator."""
 import datetime
+import math
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional, Any
+from typing import Dict, Any
 
 
 class ExecutionStatus(str, Enum):
@@ -26,6 +23,16 @@ class FrontierPayload:
     attributes: Dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
 
+    def __post_init__(self):
+        for label in ("task_id", "target_identifier", "status_descriptor"):
+            value = getattr(self, label)
+            if not isinstance(value, str) or not value.strip():
+                raise ValueError(label + " must be a nonempty string")
+        for label in ("primary_metric", "secondary_metric"):
+            value = getattr(self, label)
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+                raise ValueError(label + " must be a finite number")
+
 
 @dataclass
 class AgentTelemetryAlert:
@@ -35,7 +42,7 @@ class AgentTelemetryAlert:
     summary: str
     technical_details: str
     actionable_remediation: str
-    standard_reference: str = "Matched Molecular Pair Analysis (MMPA)"
+    standard_reference: str = "Generic threshold evaluation"
     timestamp: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
 
     def to_dict(self) -> Dict[str, Any]:
