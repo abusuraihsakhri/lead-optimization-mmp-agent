@@ -1,83 +1,78 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Lead Optimization Mmp Engine API",
-    "description": "Enterprise Distributed Component Platform (Clinical & Cryptographic AI) adhering to CAP / CLSI / NIST Standards.",
-    "version": "3.0.0-ENTERPRISE",
-    "contact": {
-      "name": "Dr. Abu Suraih Sakhri",
-      "url": "https://github.com/abusuraihsakhri"
-    }
+    "title": "Lead Optimization MMP Agent — Generic Audit API",
+    "description": "Generic deterministic threshold checks; does not identify chemical matched pairs or predict potency. Runtime OpenAPI at /openapi.json is authoritative.",
+    "version": "3.0.1"
   },
   "paths": {
-    "/health": {
+    "/": {
       "get": {
-        "summary": "Health and metadata check",
+        "summary": "Serve local browser interface",
         "responses": {
           "200": {
-            "description": "System optimal"
+            "description": "HTML application"
+          },
+          "404": {
+            "description": "Web file not bundled"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Verify service and HMAC configuration",
+        "responses": {
+          "200": {
+            "description": "Ready"
+          },
+          "503": {
+            "description": "Signing key not configured"
           }
         }
       }
     },
     "/metrics": {
       "get": {
-        "summary": "Prometheus operational metrics",
+        "summary": "In-memory operational counters in JSON",
         "responses": {
           "200": {
-            "description": "Prometheus text metrics"
+            "description": "JSON counters"
           }
         }
       }
     },
     "/api/audit": {
       "post": {
-        "summary": "Dispatch task payload across specialized workers",
+        "summary": "Evaluate generic numerical thresholds",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "task_id": {
-                    "type": "string"
-                  },
-                  "target_identifier": {
-                    "type": "string"
-                  },
-                  "primary_metric": {
-                    "type": "number"
-                  },
-                  "secondary_metric": {
-                    "type": "number"
-                  },
-                  "status_descriptor": {
-                    "type": "string"
-                  },
-                  "is_critical_flag": {
-                    "type": "boolean"
-                  }
-                },
-                "required": [
-                  "task_id",
-                  "target_identifier",
-                  "primary_metric"
-                ]
+                "$ref": "#/components/schemas/SystemTaskPayload"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Consensus dossier with HMAC signature"
+            "description": "Deterministic dossier"
+          },
+          "400": {
+            "description": "Submitted identifier matched a sensitive-data pattern"
+          },
+          "422": {
+            "description": "Invalid request"
           }
         }
       }
     },
     "/api/chat": {
       "post": {
-        "summary": "Air-gapped supervisory conversational assistant",
+        "summary": "Deterministic mock status response only",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -96,17 +91,79 @@
         },
         "responses": {
           "200": {
-            "description": "Supervisory response"
+            "description": "Mock response"
+          },
+          "400": {
+            "description": "Pattern-flagged sensitive identifier"
           }
         }
       }
     },
     "/api/audit/logs": {
       "get": {
-        "summary": "Retrieve and cryptographically verify HMAC audit trail",
+        "summary": "Read in-memory audit chain when optional token is configured",
+        "parameters": [
+          {
+            "name": "X-Audit-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Cryptographic audit trail"
+            "description": "Audit records and integrity status"
+          },
+          "403": {
+            "description": "Invalid read token"
+          },
+          "404": {
+            "description": "Log endpoint disabled"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SystemTaskPayload": {
+        "type": "object",
+        "required": [
+          "task_id",
+          "target_identifier",
+          "primary_metric"
+        ],
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "target_identifier": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "primary_metric": {
+            "type": "number"
+          },
+          "secondary_metric": {
+            "type": "number",
+            "default": 0
+          },
+          "status_descriptor": {
+            "type": "string",
+            "default": "NOMINAL",
+            "maxLength": 64
+          },
+          "is_critical_flag": {
+            "type": "boolean",
+            "default": false
+          },
+          "attributes": {
+            "type": "object"
           }
         }
       }
